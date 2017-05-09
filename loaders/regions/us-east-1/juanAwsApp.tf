@@ -28,7 +28,7 @@ module "network" {
   subnets  = "${var.subnets}"
 }
 
-module "aws-instace" {
+module "aws-instance" {
   source = "../../../modules/compute/aws-instance"
 
   name = "${var.name}"
