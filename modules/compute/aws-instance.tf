@@ -1,21 +1,21 @@
 #--------------------------------------------------------------
 # This module creates the aws instance
 #--------------------------------------------------------------
+data "template_file" "ec2juan" {
+  template = "${file("${path.module}/userdata/userdata.sh")}"
 
-variable "name"               { default = "juanAwsApp" }
-variable "ami"                {}
-variable "instance_type"      {}
-variable "security_group_id"  {}
-variable "subnet_ids"         {}
-variable "app_key_name"       {}
+  vars = {
+    GOAPP = "${file("${path.module}/userdata/goApp.go")}"
+  }
+}
 
 resource "aws_instance" "ec2juan" {
   ami           = "${var.ami}"
   instance_type = "${var.instance_type}"
-  key_name = "${var.app_key_name}"
+  key_name      = "${var.app_key_name}"
 
   vpc_security_group_ids = [
-    "${var.security_group_id}"
+    "${var.security_group_id}",
   ]
 
   tags {
@@ -27,19 +27,8 @@ resource "aws_instance" "ec2juan" {
 
   connection {
     user        = "ubuntu"
-    private_key = "${file("awsAppKey.pem")}"
+    private_key = "${file(var.public_key)}"
   }
 
-  provisioner "file" {
-    source      = "goApp.sh"
-    destination = "/tmp/goApp.sh"
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "sudo chmod +x /tmp/goApp.sh",
-      "sudo /tmp/goApp.sh & "
-    ]
-  }
-
+  user_data = "${data.template_file.ec2juan.rendered}"
 }

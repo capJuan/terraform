@@ -1,4 +1,3 @@
-# terraform
-terraform challenge 
+# Fix for Juan
 
-navegate to loaders/regions/us-east-1/  and run terraform get && terraform apply
+Hi Juan, I've cleaned up your repo and done some work for you, please have another go.
